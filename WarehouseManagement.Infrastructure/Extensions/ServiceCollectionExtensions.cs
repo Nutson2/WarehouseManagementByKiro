@@ -1,7 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using WarehouseManagement.Domain.Interfaces;
 using WarehouseManagement.Infrastructure.Data;
+using WarehouseManagement.Infrastructure.Repositories;
 
 namespace WarehouseManagement.Infrastructure.Extensions;
 
@@ -26,6 +28,17 @@ public static class ServiceCollectionExtensions
                     options.UseSqlServer(connectionString));
                 break;
         }
+
+        // Register repositories
+        services.AddScoped<IResourceRepository, ResourceRepository>();
+        services.AddScoped<IUnitOfMeasureRepository, UnitOfMeasureRepository>();
+        services.AddScoped<IClientRepository, ClientRepository>();
+        services.AddScoped<IBalanceRepository, BalanceRepository>();
+        services.AddScoped<IReceiptDocumentRepository, ReceiptDocumentRepository>();
+        services.AddScoped<IShipmentDocumentRepository, ShipmentDocumentRepository>();
+
+        // Register Unit of Work
+        services.AddScoped<IUnitOfWork, UnitOfWork>();
 
         return services;
     }
