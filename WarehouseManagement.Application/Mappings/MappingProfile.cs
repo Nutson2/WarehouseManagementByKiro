@@ -31,5 +31,9 @@ public class MappingProfile : Profile
         CreateMap<ReceiptResource, ReceiptResourceDto>()
             .ForMember(dest => dest.ResourceName, opt => opt.MapFrom(src => src.Resource.Name))
             .ForMember(dest => dest.UnitOfMeasureName, opt => opt.MapFrom(src => src.UnitOfMeasure.Name));
+
+        // ShipmentDocument mappings
+        CreateMap<ShipmentDocument, ShipmentDocumentDto>();
+        CreateMap<ShipmentResource, ShipmentResourceDto>();
     }
 }
