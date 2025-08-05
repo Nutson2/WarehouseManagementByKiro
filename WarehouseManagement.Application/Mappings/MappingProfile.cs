@@ -25,5 +25,11 @@ public class MappingProfile : Profile
         CreateMap<Client, ClientDto>();
         CreateMap<CreateClientDto, Client>();
         CreateMap<UpdateClientDto, Client>();
+
+        // ReceiptDocument mappings
+        CreateMap<ReceiptDocument, ReceiptDocumentDto>();
+        CreateMap<ReceiptResource, ReceiptResourceDto>()
+            .ForMember(dest => dest.ResourceName, opt => opt.MapFrom(src => src.Resource.Name))
+            .ForMember(dest => dest.UnitOfMeasureName, opt => opt.MapFrom(src => src.UnitOfMeasure.Name));
     }
 }
