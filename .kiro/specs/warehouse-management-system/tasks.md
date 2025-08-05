@@ -12,7 +12,12 @@
   - Добавить базовые пакеты (AutoMapper, FluentValidation, MediatR)
   - _Требования: 6.1, 6.2, 6.4, 6.5_
 
-- [ ] 2. Реализация доменного слоя
+- [x] 2. Реализация доменного слоя
+
+
+
+
+
   - Создать базовые доменные сущности (BaseEntity, Resource, UnitOfMeasure, Client)
   - Реализовать перечисления EntityStatus и DocumentStatus
   - Создать доменные сущности для документов (ReceiptDocument, ShipmentDocument, Balance)
