@@ -1,5 +1,7 @@
 using System.Net;
 using System.Text.Json;
+using FluentValidation;
+using WarehouseManagement.API.Models;
 using WarehouseManagement.Domain.Exceptions;
 
 namespace WarehouseManagement.API.Middleware;
@@ -34,18 +36,37 @@ public class GlobalExceptionMiddleware
     private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
     {
         context.Response.ContentType = "application/json";
-
-        var response = new
-        {
-            error = new
-            {
-                code = GetErrorCode(exception),
-                message = GetErrorMessage(exception),
-                details = GetErrorDetails(exception)
-            }
-        };
-
         context.Response.StatusCode = GetStatusCode(exception);
+
+        object response;
+
+        if (exception is FluentValidation.ValidationException validationException)
+        {
+            response = new ValidationErrorResponse
+            {
+                Error = new ValidationErrorInfo
+                {
+                    Details = validationException.Errors
+                        .GroupBy(x => x.PropertyName)
+                        .ToDictionary(
+                            g => g.Key,
+                            g => g.Select(x => x.ErrorMessage).ToArray()
+                        )
+                }
+            };
+        }
+        else
+        {
+            response = new ErrorResponse
+            {
+                Error = new ErrorInfo
+                {
+                    Code = GetErrorCode(exception),
+                    Message = GetErrorMessage(exception),
+                    Details = GetErrorDetails(exception)
+                }
+            };
+        }
 
         var jsonResponse = JsonSerializer.Serialize(response, new JsonSerializerOptions
         {
@@ -59,6 +80,9 @@ public class GlobalExceptionMiddleware
     {
         if (exception is EntityNotFoundException)
             return (int)HttpStatusCode.NotFound;
+        
+        if (exception is FluentValidation.ValidationException)
+            return (int)HttpStatusCode.BadRequest;
         
         if (exception is DuplicateEntityException || exception is InvalidEntityStatusException)
             return (int)HttpStatusCode.BadRequest;

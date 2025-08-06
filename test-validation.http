@@ -1,0 +1,26 @@
+### Test validation error handling
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### Test positive integer validation
+GET http://localhost:5000/api/resources/-1
+
+### Test domain exception handling
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": "Test Resource"
+}
+
+### Create duplicate resource to test domain exception
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": "Test Resource"
+}

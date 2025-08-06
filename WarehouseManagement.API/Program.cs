@@ -6,6 +6,20 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
+
+if (builder.Environment.IsDevelopment())
+{
+    builder.Logging.SetMinimumLevel(LogLevel.Debug);
+}
+else
+{
+    builder.Logging.SetMinimumLevel(LogLevel.Information);
+}
+
 // Add services to the container.
 builder.Services.AddControllers();
 

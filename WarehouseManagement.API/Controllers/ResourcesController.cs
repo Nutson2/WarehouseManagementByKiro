@@ -1,5 +1,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WarehouseManagement.API.Attributes;
 using WarehouseManagement.Application.Commands.Resources;
 using WarehouseManagement.Application.DTOs;
 using WarehouseManagement.Application.Queries.Resources;
@@ -40,7 +41,7 @@ public class ResourcesController : ControllerBase
     /// <param name="id">Идентификатор ресурса</param>
     /// <returns>Ресурс</returns>
     [HttpGet("{id}")]
-    public async Task<ActionResult<ResourceDto>> GetResource(int id)
+    public async Task<ActionResult<ResourceDto>> GetResource([PositiveInteger] int id)
     {
         var query = new GetResourceByIdQuery { Id = id };
         var resource = await _mediator.Send(query);
@@ -59,13 +60,9 @@ public class ResourcesController : ControllerBase
     /// <param name="createResourceDto">Данные для создания ресурса</param>
     /// <returns>Созданный ресурс</returns>
     [HttpPost]
+    [ValidateModel]
     public async Task<ActionResult<ResourceDto>> CreateResource([FromBody] CreateResourceDto createResourceDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { error = new { message = "Некорректные данные", details = ModelState } });
-        }
-
         var command = new CreateResourceCommand { Name = createResourceDto.Name };
         var resource = await _mediator.Send(command);
         
@@ -79,13 +76,9 @@ public class ResourcesController : ControllerBase
     /// <param name="updateResourceDto">Данные для обновления ресурса</param>
     /// <returns>Обновленный ресурс</returns>
     [HttpPut("{id}")]
-    public async Task<ActionResult<ResourceDto>> UpdateResource(int id, [FromBody] UpdateResourceDto updateResourceDto)
+    [ValidateModel]
+    public async Task<ActionResult<ResourceDto>> UpdateResource([PositiveInteger] int id, [FromBody] UpdateResourceDto updateResourceDto)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(new { error = new { message = "Некорректные данные", details = ModelState } });
-        }
-
         var command = new UpdateResourceCommand { Id = id, Name = updateResourceDto.Name };
         var resource = await _mediator.Send(command);
         
@@ -98,7 +91,7 @@ public class ResourcesController : ControllerBase
     /// <param name="id">Идентификатор ресурса</param>
     /// <returns>Результат операции</returns>
     [HttpDelete("{id}")]
-    public async Task<ActionResult> DeleteResource(int id)
+    public async Task<ActionResult> DeleteResource([PositiveInteger] int id)
     {
         var command = new DeleteResourceCommand { Id = id };
         await _mediator.Send(command);
@@ -112,7 +105,7 @@ public class ResourcesController : ControllerBase
     /// <param name="id">Идентификатор ресурса</param>
     /// <returns>Архивированный ресурс</returns>
     [HttpPut("{id}/archive")]
-    public async Task<ActionResult<ResourceDto>> ArchiveResource(int id)
+    public async Task<ActionResult<ResourceDto>> ArchiveResource([PositiveInteger] int id)
     {
         var command = new ArchiveResourceCommand { Id = id };
         var resource = await _mediator.Send(command);

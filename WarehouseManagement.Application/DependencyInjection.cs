@@ -2,6 +2,7 @@ using FluentValidation;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
+using WarehouseManagement.Application.Behaviors;
 
 namespace WarehouseManagement.Application;
 
@@ -25,6 +26,10 @@ public static class DependencyInjection
 
         // Регистрируем FluentValidation
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
+        // Регистрируем поведения MediatR pipeline
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
 
         return services;
     }
