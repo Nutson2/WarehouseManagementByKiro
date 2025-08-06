@@ -1,0 +1,154 @@
+# Test API endpoints for reference data controllers
+
+### Test Resources Controller
+
+# Get all resources
+GET http://localhost:5000/api/resources
+
+###
+
+# Create a new resource
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": "Тестовый ресурс"
+}
+
+###
+
+# Get resource by ID
+GET http://localhost:5000/api/resources/1
+
+###
+
+# Update resource
+PUT http://localhost:5000/api/resources/1
+Content-Type: application/json
+
+{
+  "name": "Обновленный ресурс"
+}
+
+###
+
+# Archive resource
+PUT http://localhost:5000/api/resources/1/archive
+
+###
+
+# Delete resource
+DELETE http://localhost:5000/api/resources/1
+
+###
+
+### Test Units Controller
+
+# Get all units
+GET http://localhost:5000/api/units
+
+###
+
+# Create a new unit
+POST http://localhost:5000/api/units
+Content-Type: application/json
+
+{
+  "name": "кг"
+}
+
+###
+
+# Get unit by ID
+GET http://localhost:5000/api/units/1
+
+###
+
+# Update unit
+PUT http://localhost:5000/api/units/1
+Content-Type: application/json
+
+{
+  "name": "килограмм"
+}
+
+###
+
+# Archive unit
+PUT http://localhost:5000/api/units/1/archive
+
+###
+
+# Delete unit
+DELETE http://localhost:5000/api/units/1
+
+###
+
+### Test Clients Controller
+
+# Get all clients
+GET http://localhost:5000/api/clients
+
+###
+
+# Create a new client
+POST http://localhost:5000/api/clients
+Content-Type: application/json
+
+{
+  "name": "ООО Тестовый клиент",
+  "address": "г. Москва, ул. Тестовая, д. 1"
+}
+
+###
+
+# Get client by ID
+GET http://localhost:5000/api/clients/1
+
+###
+
+# Update client
+PUT http://localhost:5000/api/clients/1
+Content-Type: application/json
+
+{
+  "name": "ООО Обновленный клиент",
+  "address": "г. Москва, ул. Новая, д. 2"
+}
+
+###
+
+# Archive client
+PUT http://localhost:5000/api/clients/1/archive
+
+###
+
+# Delete client
+DELETE http://localhost:5000/api/clients/1
+
+###
+
+### Test error handling
+
+# Try to get non-existent resource
+GET http://localhost:5000/api/resources/999
+
+###
+
+# Try to create resource with duplicate name
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": "Тестовый ресурс"
+}
+
+###
+
+# Try to create resource with invalid data
+POST http://localhost:5000/api/resources
+Content-Type: application/json
+
+{
+  "name": ""
+}

@@ -1,5 +1,6 @@
 using WarehouseManagement.Infrastructure.Extensions;
 using WarehouseManagement.Infrastructure.Data;
+using WarehouseManagement.API.Middleware;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -27,6 +28,9 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+// Add global exception handling middleware
+app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 app.MapControllers();

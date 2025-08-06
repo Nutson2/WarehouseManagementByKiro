@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using WarehouseManagement.Domain.Enums;
 
 namespace WarehouseManagement.Application.DTOs;
@@ -31,6 +32,8 @@ public class CreateResourceDto
     /// <summary>
     /// Наименование ресурса
     /// </summary>
+    [Required(ErrorMessage = "Наименование ресурса не может быть пустым")]
+    [StringLength(255, ErrorMessage = "Наименование ресурса не может превышать 255 символов")]
     public string Name { get; set; } = string.Empty;
 }
 
@@ -42,5 +45,7 @@ public class UpdateResourceDto
     /// <summary>
     /// Наименование ресурса
     /// </summary>
+    [Required(ErrorMessage = "Наименование ресурса не может быть пустым")]
+    [StringLength(255, ErrorMessage = "Наименование ресурса не может превышать 255 символов")]
     public string Name { get; set; } = string.Empty;
 }

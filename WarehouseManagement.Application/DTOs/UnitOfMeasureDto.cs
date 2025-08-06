@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using WarehouseManagement.Domain.Enums;
 
 namespace WarehouseManagement.Application.DTOs;
@@ -31,6 +32,8 @@ public class CreateUnitOfMeasureDto
     /// <summary>
     /// Наименование единицы измерения
     /// </summary>
+    [Required(ErrorMessage = "Наименование единицы измерения не может быть пустым")]
+    [StringLength(255, ErrorMessage = "Наименование единицы измерения не может превышать 255 символов")]
     public string Name { get; set; } = string.Empty;
 }
 
@@ -42,5 +45,7 @@ public class UpdateUnitOfMeasureDto
     /// <summary>
     /// Наименование единицы измерения
     /// </summary>
+    [Required(ErrorMessage = "Наименование единицы измерения не может быть пустым")]
+    [StringLength(255, ErrorMessage = "Наименование единицы измерения не может превышать 255 символов")]
     public string Name { get; set; } = string.Empty;
 }
