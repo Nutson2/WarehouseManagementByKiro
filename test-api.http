@@ -174,3 +174,190 @@ GET http://localhost:5150/api/balance?unitIds=1&unitIds=2
 
 # Get balance filtered by both resource and unit IDs
 GET http://localhost:5150/api/balance?resourceIds=1&resourceIds=2&unitIds=1&unitIds=2
+###
+ Test Receipts Controller
+
+# Get all receipt documents
+GET http://localhost:5150/api/receipts
+
+###
+
+# Get receipt documents with date filter
+GET http://localhost:5150/api/receipts?dateFrom=2024-01-01&dateTo=2024-12-31
+
+###
+
+# Get receipt documents with multiple filters
+GET http://localhost:5150/api/receipts?dateFrom=2024-01-01&dateTo=2024-12-31&numbers=DOC001&numbers=DOC002&resourceIds=1&resourceIds=2&unitIds=1&unitIds=2
+
+###
+
+# Create a new receipt document
+POST http://localhost:5150/api/receipts
+Content-Type: application/json
+
+{
+  "number": "REC001",
+  "date": "2024-01-15T10:00:00",
+  "resources": [
+    {
+      "resourceId": 1,
+      "unitOfMeasureId": 1,
+      "quantity": 100.5
+    },
+    {
+      "resourceId": 2,
+      "unitOfMeasureId": 2,
+      "quantity": 50.0
+    }
+  ]
+}
+
+###
+
+# Get receipt document by ID
+GET http://localhost:5150/api/receipts/1
+
+###
+
+# Update receipt document
+PUT http://localhost:5150/api/receipts/1
+Content-Type: application/json
+
+{
+  "number": "REC001-UPD",
+  "date": "2024-01-15T11:00:00",
+  "resources": [
+    {
+      "id": 1,
+      "resourceId": 1,
+      "unitOfMeasureId": 1,
+      "quantity": 120.5
+    },
+    {
+      "id": 0,
+      "resourceId": 3,
+      "unitOfMeasureId": 1,
+      "quantity": 25.0
+    }
+  ]
+}
+
+###
+
+# Delete receipt document
+DELETE http://localhost:5150/api/receipts/1
+
+###
+
+### Test Shipments Controller
+
+# Get all shipment documents
+GET http://localhost:5150/api/shipments
+
+###
+
+# Get shipment documents with date filter
+GET http://localhost:5150/api/shipments?dateFrom=2024-01-01&dateTo=2024-12-31
+
+###
+
+# Get shipment documents with multiple filters
+GET http://localhost:5150/api/shipments?dateFrom=2024-01-01&dateTo=2024-12-31&numbers=SHIP001&numbers=SHIP002&resourceIds=1&resourceIds=2&unitIds=1&unitIds=2
+
+###
+
+# Create a new shipment document
+POST http://localhost:5150/api/shipments
+Content-Type: application/json
+
+{
+  "number": "SHIP001",
+  "clientId": 1,
+  "date": "2024-01-15T10:00:00",
+  "resources": [
+    {
+      "resourceId": 1,
+      "unitOfMeasureId": 1,
+      "quantity": 50.0
+    },
+    {
+      "resourceId": 2,
+      "unitOfMeasureId": 2,
+      "quantity": 25.0
+    }
+  ]
+}
+
+###
+
+# Get shipment document by ID
+GET http://localhost:5150/api/shipments/1
+
+###
+
+# Update shipment document
+PUT http://localhost:5150/api/shipments/1
+Content-Type: application/json
+
+{
+  "clientId": 1,
+  "number": "SHIP001-UPD",
+  "date": "2024-01-15T11:00:00",
+  "resources": [
+    {
+      "id": 1,
+      "resourceId": 1,
+      "unitOfMeasureId": 1,
+      "quantity": 60.0
+    },
+    {
+      "id": 0,
+      "resourceId": 3,
+      "unitOfMeasureId": 1,
+      "quantity": 15.0
+    }
+  ]
+}
+
+###
+
+# Approve shipment document
+PUT http://localhost:5150/api/shipments/1/approve
+
+###
+
+# Revoke shipment document
+PUT http://localhost:5150/api/shipments/1/revoke
+
+###
+
+# Delete shipment document
+DELETE http://localhost:5150/api/shipments/1
+
+###
+
+### Test Document Filtering
+
+# Test receipt documents filtering by numbers only (independent of date period)
+GET http://localhost:5150/api/receipts?numbers=REC001&numbers=REC002
+
+###
+
+# Test shipment documents filtering by resources only (independent of date period)
+GET http://localhost:5150/api/shipments?resourceIds=1&resourceIds=2
+
+###
+
+# Test receipt documents filtering by units only (independent of date period)
+GET http://localhost:5150/api/receipts?unitIds=1&unitIds=2
+
+###
+
+# Test error handling for non-existent document
+GET http://localhost:5150/api/receipts/999
+
+###
+
+# Test error handling for non-existent shipment
+GET http://localhost:5150/api/shipments/999
