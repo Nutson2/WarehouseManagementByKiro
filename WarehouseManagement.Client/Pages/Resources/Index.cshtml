@@ -1,0 +1,109 @@
+@page
+@model WarehouseManagement.Client.Pages.Resources.IndexModel
+@{
+    ViewData["Title"] = "Ресурсы";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Ресурсы</h2>
+    <a asp-page="./Create" class="btn btn-primary">Добавить ресурс</a>
+</div>
+
+@if (Model.Resources.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Наименование</th>
+                    <th>Статус</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var resource in Model.Resources)
+                {
+                    <tr>
+                        <td>@resource.Id</td>
+                        <td>@resource.Name</td>
+                        <td>
+                            @if (resource.Status == 1)
+                            {
+                                <span class="badge bg-success">Активный</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-secondary">Архивный</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <a asp-page="./Edit" asp-route-id="@resource.Id" class="btn btn-sm btn-outline-primary">Изменить</a>
+                                @if (resource.Status == 1)
+                                {
+                                    <button type="button" class="btn btn-sm btn-outline-warning" onclick="archiveResource(@resource.Id)">Архивировать</button>
+                                }
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteResource(@resource.Id)">Удалить</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>Ресурсы не найдены</h4>
+        <p>Добавьте первый ресурс, нажав кнопку "Добавить ресурс".</p>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        async function archiveResource(id) {
+            if (confirm('Вы уверены, что хотите архивировать этот ресурс?')) {
+                try {
+                    const response = await fetch(`/Resources/Archive/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Ошибка при архивировании ресурса');
+                    }
+                } catch (error) {
+                    alert('Ошибка при архивировании ресурса');
+                }
+            }
+        }
+
+        async function deleteResource(id) {
+            if (confirm('Вы уверены, что хотите удалить этот ресурс?')) {
+                try {
+                    const response = await fetch(`/Resources/Delete/${id}`, {
+                        method: 'POST',
+                        headers: {
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                        }
+                    });
+                    
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        const errorText = await response.text();
+                        alert('Ошибка при удалении ресурса: ' + errorText);
+                    }
+                } catch (error) {
+                    alert('Ошибка при удалении ресурса');
+                }
+            }
+        }
+    </script>
+}

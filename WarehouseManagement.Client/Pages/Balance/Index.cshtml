@@ -1,0 +1,55 @@
+@page
+@model WarehouseManagement.Client.Pages.Balance.IndexModel
+@{
+    ViewData["Title"] = "Баланс склада";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Баланс склада</h2>
+    <button type="button" class="btn btn-secondary" onclick="location.reload()">Обновить</button>
+</div>
+
+@if (Model.Balance.Any())
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Ресурс</th>
+                    <th>Единица измерения</th>
+                    <th>Количество</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.Balance)
+                {
+                    <tr>
+                        <td>@item.ResourceName</td>
+                        <td>@item.UnitOfMeasureName</td>
+                        <td>
+                            @if (item.Quantity > 0)
+                            {
+                                <span class="text-success">@item.Quantity.ToString("N2")</span>
+                            }
+                            else if (item.Quantity < 0)
+                            {
+                                <span class="text-danger">@item.Quantity.ToString("N2")</span>
+                            }
+                            else
+                            {
+                                <span class="text-muted">@item.Quantity.ToString("N2")</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info">
+        <h4>Баланс пуст</h4>
+        <p>На складе нет товаров или данные еще не загружены.</p>
+    </div>
+}

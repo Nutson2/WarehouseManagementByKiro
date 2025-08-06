@@ -23,6 +23,17 @@ else
 // Add services to the container.
 builder.Services.AddControllers();
 
+// Add CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowClient", policy =>
+    {
+        policy.WithOrigins("https://localhost:7002", "http://localhost:5002")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
 // Add Application services
 builder.Services.AddApplicationServices();
 
@@ -51,6 +62,9 @@ if (app.Environment.IsDevelopment())
 app.UseMiddleware<GlobalExceptionMiddleware>();
 
 app.UseHttpsRedirection();
+
+// Use CORS
+app.UseCors("AllowClient");
 app.MapControllers();
 
 app.Run();

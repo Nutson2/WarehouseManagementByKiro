@@ -1,0 +1,47 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Главная страница";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Система управления складом</h1>
+    <p class="lead">Добро пожаловать в систему управления складом</p>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Справочники</h5>
+                <p class="card-text">Управление ресурсами, единицами измерения и клиентами</p>
+                <div class="d-grid gap-2">
+                    <a asp-page="/Resources/Index" class="btn btn-primary">Ресурсы</a>
+                    <a asp-page="/Units/Index" class="btn btn-primary">Единицы измерения</a>
+                    <a asp-page="/Clients/Index" class="btn btn-primary">Клиенты</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Склад</h5>
+                <p class="card-text">Просмотр текущего баланса товаров на складе</p>
+                <a asp-page="/Balance/Index" class="btn btn-success btn-lg">Баланс склада</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Документы</h5>
+                <p class="card-text">Управление документами поступления и отгрузки</p>
+                <div class="d-grid gap-2">
+                    <a asp-page="/Receipts/Index" class="btn btn-info">Поступления</a>
+                    <a asp-page="/Shipments/Index" class="btn btn-warning">Отгрузки</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
