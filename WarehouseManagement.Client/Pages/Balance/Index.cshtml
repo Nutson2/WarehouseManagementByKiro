@@ -4,52 +4,292 @@
     ViewData["Title"] = "Баланс склада";
 }
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <h2>Баланс склада</h2>
-    <button type="button" class="btn btn-secondary" onclick="location.reload()">Обновить</button>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@ViewData["Title"]</h1>
+    <button type="button" class="btn btn-outline-primary" onclick="refreshBalance()">
+        <i class="bi bi-arrow-clockwise"></i> Обновить
+    </button>
 </div>
 
-@if (Model.Balance.Any())
-{
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Ресурс</th>
-                    <th>Единица измерения</th>
-                    <th>Количество</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model.Balance)
-                {
-                    <tr>
-                        <td>@item.ResourceName</td>
-                        <td>@item.UnitOfMeasureName</td>
-                        <td>
-                            @if (item.Quantity > 0)
+<!-- Фильтры -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Фильтры</h5>
+    </div>
+    <div class="card-body">
+        <form id="filterForm">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="resourceFilter" class="form-label">Ресурсы</label>
+                    <select id="resourceFilter" class="form-select" multiple>
+                        @foreach (var resource in Model.Resources)
+                        {
+                            <option value="@resource.Id">@resource.Name</option>
+                        }
+                    </select>
+                    <div class="form-text">Удерживайте Ctrl для множественного выбора</div>
+                </div>
+                <div class="col-md-6">
+                    <label for="unitFilter" class="form-label">Единицы измерения</label>
+                    <select id="unitFilter" class="form-select" multiple>
+                        @foreach (var unit in Model.Units)
+                        {
+                            <option value="@unit.Id">@unit.Name</option>
+                        }
+                    </select>
+                    <div class="form-text">Удерживайте Ctrl для множественного выбора</div>
+                </div>
+            </div>
+            <div class="row mt-3">
+                <div class="col-12">
+                    <button type="button" class="btn btn-primary" onclick="applyFilters()">Применить фильтры</button>
+                    <button type="button" class="btn btn-outline-secondary" onclick="clearFilters()">Очистить фильтры</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Таблица баланса -->
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Остатки на складе</h5>
+        <span id="recordsCount" class="badge bg-secondary">Всего записей: @Model.Balance.Count()</span>
+    </div>
+    <div class="card-body">
+        <div id="loadingSpinner" class="text-center d-none">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Загрузка...</span>
+            </div>
+        </div>
+        
+        <div id="balanceTable">
+            @if (Model.Balance.Any())
+            {
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Ресурс</th>
+                                <th>Единица измерения</th>
+                                <th class="text-end">Количество</th>
+                            </tr>
+                        </thead>
+                        <tbody id="balanceTableBody">
+                            @foreach (var item in Model.Balance)
                             {
-                                <span class="text-success">@item.Quantity.ToString("N2")</span>
+                                <tr>
+                                    <td>@item.ResourceName</td>
+                                    <td>@item.UnitOfMeasureName</td>
+                                    <td class="text-end">
+                                        <span class="@(item.Quantity > 0 ? "text-success" : item.Quantity < 0 ? "text-danger" : "text-muted")">
+                                            @item.Quantity.ToString("N2")
+                                        </span>
+                                    </td>
+                                </tr>
                             }
-                            else if (item.Quantity < 0)
-                            {
-                                <span class="text-danger">@item.Quantity.ToString("N2")</span>
-                            }
-                            else
-                            {
-                                <span class="text-muted">@item.Quantity.ToString("N2")</span>
-                            }
-                        </td>
-                    </tr>
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div id="noDataMessage" class="text-center text-muted py-4">
+                    <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                    <p class="mt-2">Нет данных для отображения</p>
+                    <p class="small">Попробуйте изменить фильтры или добавить документы поступления</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let autoRefreshInterval;
+        
+        // Автоматическое обновление каждые 30 секунд
+        function startAutoRefresh() {
+            autoRefreshInterval = setInterval(function() {
+                refreshBalance();
+            }, 30000);
+        }
+        
+        function stopAutoRefresh() {
+            if (autoRefreshInterval) {
+                clearInterval(autoRefreshInterval);
+            }
+        }
+        
+        // Применить фильтры
+        function applyFilters() {
+            const resourceIds = Array.from(document.getElementById('resourceFilter').selectedOptions)
+                .map(option => option.value);
+            const unitIds = Array.from(document.getElementById('unitFilter').selectedOptions)
+                .map(option => option.value);
+            
+            loadBalance(resourceIds, unitIds);
+        }
+        
+        // Очистить фильтры
+        function clearFilters() {
+            document.getElementById('resourceFilter').selectedIndex = -1;
+            document.getElementById('unitFilter').selectedIndex = -1;
+            loadBalance([], []);
+        }
+        
+        // Обновить баланс
+        function refreshBalance() {
+            const resourceIds = Array.from(document.getElementById('resourceFilter').selectedOptions)
+                .map(option => option.value);
+            const unitIds = Array.from(document.getElementById('unitFilter').selectedOptions)
+                .map(option => option.value);
+            
+            loadBalance(resourceIds, unitIds);
+        }
+        
+        // Загрузить данные баланса
+        function loadBalance(resourceIds = [], unitIds = []) {
+            showLoading(true);
+            
+            let url = '/Balance/Index?handler=Balance';
+            const params = new URLSearchParams();
+            
+            if (resourceIds.length > 0) {
+                resourceIds.forEach(id => params.append('resourceIds', id));
+            }
+            
+            if (unitIds.length > 0) {
+                unitIds.forEach(id => params.append('unitIds', id));
+            }
+            
+            if (params.toString()) {
+                url += '&' + params.toString();
+            }
+            
+            fetch(url, {
+                method: 'GET',
+                headers: {
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                 }
-            </tbody>
-        </table>
-    </div>
-}
-else
-{
-    <div class="alert alert-info">
-        <h4>Баланс пуст</h4>
-        <p>На складе нет товаров или данные еще не загружены.</p>
-    </div>
+            })
+            .then(response => response.json())
+            .then(data => {
+                updateBalanceTable(data);
+                showLoading(false);
+            })
+            .catch(error => {
+                console.error('Ошибка при загрузке баланса:', error);
+                showError('Ошибка при загрузке данных');
+                showLoading(false);
+            });
+        }
+        
+        // Обновить таблицу баланса
+        function updateBalanceTable(balance) {
+            const tableBody = document.getElementById('balanceTableBody');
+            const recordsCount = document.getElementById('recordsCount');
+            const noDataMessage = document.getElementById('noDataMessage');
+            const table = tableBody?.closest('table');
+            
+            recordsCount.textContent = `Всего записей: ${balance.length}`;
+            
+            if (balance.length === 0) {
+                if (table) table.style.display = 'none';
+                if (noDataMessage) {
+                    noDataMessage.style.display = 'block';
+                } else {
+                    document.getElementById('balanceTable').innerHTML = `
+                        <div id="noDataMessage" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 3rem;"></i>
+                            <p class="mt-2">Нет данных для отображения</p>
+                            <p class="small">Попробуйте изменить фильтры или добавить документы поступления</p>
+                        </div>
+                    `;
+                }
+                return;
+            }
+            
+            if (noDataMessage) noDataMessage.style.display = 'none';
+            
+            if (!table) {
+                // Создать таблицу если её нет
+                document.getElementById('balanceTable').innerHTML = `
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Ресурс</th>
+                                    <th>Единица измерения</th>
+                                    <th class="text-end">Количество</th>
+                                </tr>
+                            </thead>
+                            <tbody id="balanceTableBody"></tbody>
+                        </table>
+                    </div>
+                `;
+            } else {
+                table.style.display = 'table';
+            }
+            
+            const tbody = document.getElementById('balanceTableBody');
+            tbody.innerHTML = balance.map(item => `
+                <tr>
+                    <td>${escapeHtml(item.resourceName)}</td>
+                    <td>${escapeHtml(item.unitOfMeasureName)}</td>
+                    <td class="text-end">
+                        <span class="${item.quantity > 0 ? 'text-success' : item.quantity < 0 ? 'text-danger' : 'text-muted'}">
+                            ${item.quantity.toFixed(2)}
+                        </span>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Показать/скрыть индикатор загрузки
+        function showLoading(show) {
+            const spinner = document.getElementById('loadingSpinner');
+            const table = document.getElementById('balanceTable');
+            
+            if (show) {
+                spinner.classList.remove('d-none');
+                table.style.opacity = '0.5';
+            } else {
+                spinner.classList.add('d-none');
+                table.style.opacity = '1';
+            }
+        }
+        
+        // Показать ошибку
+        function showError(message) {
+            // Можно добавить toast уведомления или другой способ показа ошибок
+            alert(message);
+        }
+        
+        // Экранирование HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            startAutoRefresh();
+        });
+        
+        // Остановить автообновление при уходе со страницы
+        window.addEventListener('beforeunload', function() {
+            stopAutoRefresh();
+        });
+        
+        // Остановить автообновление при скрытии страницы
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopAutoRefresh();
+            } else {
+                startAutoRefresh();
+            }
+        });
+    </script>
 }
