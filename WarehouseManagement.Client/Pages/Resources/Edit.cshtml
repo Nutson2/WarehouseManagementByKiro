@@ -1,0 +1,32 @@
+@page "{id:int}"
+@model WarehouseManagement.Client.Pages.Resources.EditModel
+@{
+    ViewData["Title"] = "Редактировать ресурс";
+}
+
+<div class="row">
+    <div class="col-md-6">
+        <h2>Редактировать ресурс</h2>
+        
+        <form method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <input asp-for="Id" type="hidden" />
+            
+            <div class="mb-3">
+                <label asp-for="Resource.Name" class="form-label">Наименование</label>
+                <input asp-for="Resource.Name" class="form-control" />
+                <span asp-validation-for="Resource.Name" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+                <a asp-page="./Index" class="btn btn-secondary">Отмена</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

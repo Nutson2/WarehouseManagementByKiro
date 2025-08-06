@@ -4,6 +4,10 @@
     ViewData["Title"] = "Ресурсы";
 }
 
+<form method="post" style="display: none;">
+    @Html.AntiForgeryToken()
+</form>
+
 <div class="d-flex justify-content-between align-items-center mb-3">
     <h2>Ресурсы</h2>
     <a asp-page="./Create" class="btn btn-primary">Добавить ресурс</a>
@@ -66,18 +70,21 @@ else
         async function archiveResource(id) {
             if (confirm('Вы уверены, что хотите архивировать этот ресурс?')) {
                 try {
-                    const response = await fetch(`/Resources/Archive/${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        }
-                    });
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/Resources?handler=Archive&id=${id}`;
                     
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        alert('Ошибка при архивировании ресурса');
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                    if (token) {
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '__RequestVerificationToken';
+                        tokenInput.value = token.value;
+                        form.appendChild(tokenInput);
                     }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
                 } catch (error) {
                     alert('Ошибка при архивировании ресурса');
                 }
@@ -87,19 +94,21 @@ else
         async function deleteResource(id) {
             if (confirm('Вы уверены, что хотите удалить этот ресурс?')) {
                 try {
-                    const response = await fetch(`/Resources/Delete/${id}`, {
-                        method: 'POST',
-                        headers: {
-                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
-                        }
-                    });
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = `/Resources?handler=Delete&id=${id}`;
                     
-                    if (response.ok) {
-                        location.reload();
-                    } else {
-                        const errorText = await response.text();
-                        alert('Ошибка при удалении ресурса: ' + errorText);
+                    const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                    if (token) {
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '__RequestVerificationToken';
+                        tokenInput.value = token.value;
+                        form.appendChild(tokenInput);
                     }
+                    
+                    document.body.appendChild(form);
+                    form.submit();
                 } catch (error) {
                     alert('Ошибка при удалении ресурса');
                 }
