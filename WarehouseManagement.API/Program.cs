@@ -1,12 +1,16 @@
 using WarehouseManagement.Infrastructure.Extensions;
 using WarehouseManagement.Infrastructure.Data;
 using WarehouseManagement.API.Middleware;
+using WarehouseManagement.Application;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Add Application services
+builder.Services.AddApplicationServices();
 
 // Add Infrastructure services
 builder.Services.AddInfrastructure(builder.Configuration);

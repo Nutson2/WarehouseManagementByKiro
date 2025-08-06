@@ -152,3 +152,25 @@ Content-Type: application/json
 {
   "name": ""
 }
+
+###
+
+### Test Balance Controller
+
+# Get all balance
+GET http://localhost:5150/api/balance
+
+###
+
+# Get balance filtered by resource IDs
+GET http://localhost:5150/api/balance?resourceIds=1&resourceIds=2
+
+###
+
+# Get balance filtered by unit IDs
+GET http://localhost:5150/api/balance?unitIds=1&unitIds=2
+
+###
+
+# Get balance filtered by both resource and unit IDs
+GET http://localhost:5150/api/balance?resourceIds=1&resourceIds=2&unitIds=1&unitIds=2

@@ -35,5 +35,12 @@ public class MappingProfile : Profile
         // ShipmentDocument mappings
         CreateMap<ShipmentDocument, ShipmentDocumentDto>();
         CreateMap<ShipmentResource, ShipmentResourceDto>();
+
+        // Balance mappings
+        CreateMap<Balance, BalanceDto>()
+            .ForMember(dest => dest.ResourceName, opt => opt.MapFrom(src => src.Resource.Name))
+            .ForMember(dest => dest.ResourceStatus, opt => opt.MapFrom(src => src.Resource.Status))
+            .ForMember(dest => dest.UnitOfMeasureName, opt => opt.MapFrom(src => src.UnitOfMeasure.Name))
+            .ForMember(dest => dest.UnitOfMeasureStatus, opt => opt.MapFrom(src => src.UnitOfMeasure.Status));
     }
 }

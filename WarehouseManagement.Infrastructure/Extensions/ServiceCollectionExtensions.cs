@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using WarehouseManagement.Domain.Interfaces;
+using WarehouseManagement.Domain.Services;
 using WarehouseManagement.Infrastructure.Data;
 using WarehouseManagement.Infrastructure.Repositories;
 
@@ -39,6 +40,9 @@ public static class ServiceCollectionExtensions
 
         // Register Unit of Work
         services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+        // Register domain services
+        services.AddScoped<IBalanceService, BalanceService>();
 
         return services;
     }
